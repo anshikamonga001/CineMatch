@@ -38,7 +38,7 @@ async function register(req, res, next) {
 
     // Insert user
     const result = await query(
-      `INSERT INTO users (email, password_hash, first_name, last_name, country)
+      `INSERT INTO users (email, password, first_name, last_name, country)
        VALUES (?, ?, ?, ?, ?)`,
       [email.toLowerCase().trim(), password_hash, first_name.trim(), last_name.trim(), country || null]
     );
@@ -78,7 +78,7 @@ async function login(req, res, next) {
 
     // Find user
     const rows = await query(
-      'SELECT user_id, email, password_hash, first_name, last_name, country, role, created_at FROM users WHERE email = ? LIMIT 1',
+      'SELECT user_id, email, password, first_name, last_name, country, role, created_at FROM users WHERE email = ? LIMIT 1',
       [email.toLowerCase().trim()]
     );
 
@@ -89,13 +89,13 @@ async function login(req, res, next) {
     const user = rows[0];
 
     // Compare password
-    const match = await bcrypt.compare(password, user.password_hash);
+    const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });
     }
 
-    // Build safe user object (exclude password_hash)
-    const { password_hash, ...safeUser } = user;
+    // Build safe user object (exclude password)
+    const { password, ...safeUser } = user;
 
     const token = signToken(safeUser);
 
@@ -197,16 +197,16 @@ async function changePassword(req, res, next) {
       return res.status(422).json({ success: false, message: 'New password must be at least 6 characters.' });
     }
 
-    const rows = await query('SELECT password_hash FROM users WHERE user_id = ?', [req.user.user_id]);
+    const rows = await query('SELECT password FROM users WHERE user_id = ?', [req.user.user_id]);
     if (!rows.length) return res.status(404).json({ success: false, message: 'User not found.' });
 
-    const match = await bcrypt.compare(current_password, rows[0].password_hash);
+    const match = await bcrypt.compare(current_password, rows[0].password);
     if (!match) {
       return res.status(401).json({ success: false, message: 'Current password is incorrect.' });
     }
 
     const newHash = await bcrypt.hash(new_password, 10);
-    await query('UPDATE users SET password_hash = ? WHERE user_id = ?', [newHash, req.user.user_id]);
+    await query('UPDATE users SET password = ? WHERE user_id = ?', [newHash, req.user.user_id]);
 
     return res.json({ success: true, message: 'Password changed successfully.' });
   } catch (err) {

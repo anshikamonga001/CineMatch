@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS users (
     gender        ENUM('Male','Female','Other','Prefer not to say') DEFAULT NULL,
     date_of_birth DATE         DEFAULT NULL,
     country       VARCHAR(50)  DEFAULT NULL,
+    role          VARCHAR(20)  DEFAULT 'user',
     created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id),
     UNIQUE KEY uq_users_email (email)

@@ -214,7 +214,7 @@ async function seed() {
     }
 
     const inserted = await batchInsert(conn, 'users',
-      ['email', 'password_hash', 'first_name', 'last_name', 'country', 'role'],
+      ['email', 'password', 'first_name', 'last_name', 'country', 'role'],
       newUserRows
     );
     log(`Inserted ${inserted} new users.`);
