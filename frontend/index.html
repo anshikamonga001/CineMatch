@@ -148,13 +148,7 @@
           <span class="nav-label">Analytics</span>
         </a>
       </li>
-      <li class="nav-item nav-divider"></li>
-      <li class="nav-item" id="nav-db-section">
-        <a href="#" class="nav-link" data-section="database" id="nav-database">
-          <span class="nav-icon">🗄️</span>
-          <span class="nav-label">Database</span>
-        </a>
-      </li>
+
     </ul>
 
     <div class="sidebar-footer">
@@ -516,126 +510,7 @@
       </div>
     </section>
 
-    <!-- =================== DATABASE SECTION =================== -->
-    <section id="section-database" class="content-section">
-      <div class="section-header">
-        <div>
-          <h1 class="section-title">Database Explorer</h1>
-          <p class="section-subtitle">Explore CineMatch database schema and run queries</p>
-        </div>
-      </div>
 
-      <div class="db-grid">
-        <!-- Schema Cards -->
-        <div class="db-schema-panel glass-card">
-          <h3 class="panel-title">📊 Schema Overview</h3>
-          <div class="schema-tables" id="schema-tables">
-            <div class="schema-table-item" onclick="showTableInfo('users')">
-              <span class="table-icon">👤</span><span>users</span><span class="table-badge">10 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('movies')">
-              <span class="table-icon">🎬</span><span>movies</span><span class="table-badge">14 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('genres')">
-              <span class="table-icon">🎭</span><span>genres</span><span class="table-badge">2 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('directors')">
-              <span class="table-icon">🎥</span><span>directors</span><span class="table-badge">4 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('actors')">
-              <span class="table-icon">🎭</span><span>actors</span><span class="table-badge">4 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('movie_actors')">
-              <span class="table-icon">🔗</span><span>movie_actors</span><span class="table-badge">Junction</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('ratings')">
-              <span class="table-icon">⭐</span><span>ratings</span><span class="table-badge">5 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('reviews')">
-              <span class="table-icon">💬</span><span>reviews</span><span class="table-badge">5 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('watchlist')">
-              <span class="table-icon">📋</span><span>watchlist</span><span class="table-badge">5 cols</span>
-            </div>
-            <div class="schema-table-item" onclick="showTableInfo('recommendations')">
-              <span class="table-icon">🎯</span><span>recommendations</span><span class="table-badge">5 cols</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table Info -->
-        <div class="db-info-panel glass-card" id="db-info-panel">
-          <h3 class="panel-title" id="db-table-title">Select a table</h3>
-          <div id="db-table-info">
-            <p class="db-hint">Click on a table in the schema panel to see its details.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- ERD Visualization -->
-      <div class="glass-card panel erd-panel">
-        <h3 class="panel-title">🔗 Entity Relationship Overview</h3>
-        <div class="erd-diagram" id="erd-diagram">
-          <div class="erd-entity" style="grid-column:1;grid-row:2">
-            <div class="erd-name">👤 users</div>
-            <div class="erd-attr">PK: user_id</div>
-            <div class="erd-attr">email, name</div>
-            <div class="erd-attr">country, gender</div>
-          </div>
-          <div class="erd-entity" style="grid-column:3;grid-row:1">
-            <div class="erd-name">⭐ ratings</div>
-            <div class="erd-attr">PK: rating_id</div>
-            <div class="erd-attr">FK: user_id</div>
-            <div class="erd-attr">FK: movie_id, 1-5</div>
-          </div>
-          <div class="erd-entity" style="grid-column:3;grid-row:2">
-            <div class="erd-name">💬 reviews</div>
-            <div class="erd-attr">PK: review_id</div>
-            <div class="erd-attr">FK: user_id</div>
-            <div class="erd-attr">FK: movie_id</div>
-          </div>
-          <div class="erd-entity" style="grid-column:3;grid-row:3">
-            <div class="erd-name">📋 watchlist</div>
-            <div class="erd-attr">PK: watchlist_id</div>
-            <div class="erd-attr">FK: user_id</div>
-            <div class="erd-attr">FK: movie_id</div>
-          </div>
-          <div class="erd-entity" style="grid-column:5;grid-row:2">
-            <div class="erd-name">🎬 movies</div>
-            <div class="erd-attr">PK: movie_id</div>
-            <div class="erd-attr">FK: genre_id</div>
-            <div class="erd-attr">FK: director_id</div>
-          </div>
-          <div class="erd-entity" style="grid-column:7;grid-row:1">
-            <div class="erd-name">🎭 genres</div>
-            <div class="erd-attr">PK: genre_id</div>
-            <div class="erd-attr">genre_name</div>
-          </div>
-          <div class="erd-entity" style="grid-column:7;grid-row:2">
-            <div class="erd-name">🎥 directors</div>
-            <div class="erd-attr">PK: director_id</div>
-            <div class="erd-attr">name, country</div>
-          </div>
-          <div class="erd-entity" style="grid-column:7;grid-row:3">
-            <div class="erd-name">🎭 actors</div>
-            <div class="erd-attr">PK: actor_id</div>
-            <div class="erd-attr">name, country</div>
-          </div>
-          <div class="erd-entity" style="grid-column:5;grid-row:3">
-            <div class="erd-name">🔗 movie_actors</div>
-            <div class="erd-attr">FK: movie_id</div>
-            <div class="erd-attr">FK: actor_id</div>
-            <div class="erd-attr">M:N Junction</div>
-          </div>
-          <div class="erd-entity" style="grid-column:3;grid-row:4">
-            <div class="erd-name">🎯 recommendations</div>
-            <div class="erd-attr">PK: rec_id</div>
-            <div class="erd-attr">FK: user_id</div>
-            <div class="erd-attr">FK: movie_id, score</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
   </main><!-- end .main-content -->
 
