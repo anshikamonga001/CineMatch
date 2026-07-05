@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineMatch – Movie Recommendation & Analytics System</title>
+  <meta name="description" content="CineMatch is your personal movie intelligence platform. Discover films, track your watchlist, rate movies, and get AI-powered recommendations." />
+  <meta property="og:title" content="CineMatch – Movie Recommendation & Analytics" />
+  <meta property="og:description" content="Discover movies, track watchlists, and get personalized recommendations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <span class="loader-icon">🎬</span>
+        <span class="loader-text">CineMatch</span>
+      </div>
+      <div class="loader-bar">
+        <div class="loader-fill" id="loader-fill"></div>
+      </div>
+      <p class="loader-subtitle">Loading your cinema universe…</p>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="modal-overlay hidden">
+    <div class="modal glass-card">
+      <button class="modal-close" id="close-auth-modal" aria-label="Close modal">✕</button>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Sign in to your CineMatch account</p>
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required />
+        </div>
+        <div id="login-error" class="form-error hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn">Sign In</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form hidden">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join CineMatch today</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-first-name">First Name</label>
+            <input type="text" id="reg-first-name" placeholder="John" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-last-name">Last Name</label>
+            <input type="text" id="reg-last-name" placeholder="Doe" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" placeholder="Min 6 characters" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-gender">Gender</label>
+            <select id="reg-gender">
+              <option value="">Select…</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-country">Country</label>
+            <input type="text" id="reg-country" placeholder="India" />
+          </div>
+        </div>
+        <div id="register-error" class="form-error hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="register-btn">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Movie Detail Modal -->
+  <div id="movie-modal" class="modal-overlay hidden">
+    <div class="modal movie-modal glass-card">
+      <button class="modal-close" id="close-movie-modal" aria-label="Close modal">✕</button>
+      <div id="movie-modal-content">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">🎬</span>
+        <span class="logo-text">CineMatch</span>
+      </div>
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a href="#" class="nav-link active" data-section="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-section="discover" id="nav-discover">
+          <span class="nav-icon">🔍</span>
+          <span class="nav-label">Discover</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-section="recommendations" id="nav-recommendations">
+          <span class="nav-icon">⭐</span>
+          <span class="nav-label">Recommendations</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-section="watchlist" id="nav-watchlist">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">My Watchlist</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-section="analytics" id="nav-analytics">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Analytics</span>
+        </a>
+      </li>
+      <li class="nav-item nav-divider"></li>
+      <li class="nav-item" id="nav-db-section">
+        <a href="#" class="nav-link" data-section="database" id="nav-database">
+          <span class="nav-icon">🗄️</span>
+          <span class="nav-label">Database</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="user-card" id="sidebar-user-card">
+        <div class="user-avatar" id="sidebar-avatar">?</div>
+        <div class="user-info" id="sidebar-user-info">
+          <span class="user-name" id="sidebar-name">Guest User</span>
+          <span class="user-role" id="sidebar-role">Not signed in</span>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm btn-full" id="auth-btn" onclick="openAuthModal()">Sign In</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <button class="topbar-toggle" id="topbar-sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="global-search" placeholder="Search movies, directors, actors…" autocomplete="off" />
+        <div class="search-results" id="search-results"></div>
+      </div>
+      <div class="topbar-actions">
+        <div class="notification-badge" title="System Status">
+          <span class="status-dot" id="api-status-dot"></span>
+          <span class="status-label" id="api-status-label">API</span>
+        </div>
+        <button class="btn btn-outline btn-sm" id="topbar-auth-btn" onclick="openAuthModal()">Sign In</button>
+      </div>
+    </header>
+
+    <!-- =================== DASHBOARD SECTION =================== -->
+    <section id="section-dashboard" class="content-section active">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Dashboard</h1>
+          <p class="section-subtitle">Your cinema intelligence overview</p>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card glass-card" id="stat-users">
+          <div class="stat-icon" style="background: linear-gradient(135deg,#6c63ff,#3ecfff)">👤</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-users-val">—</span>
+            <span class="stat-label">Total Users</span>
+          </div>
+          <div class="stat-trend up">↑ Active</div>
+        </div>
+        <div class="stat-card glass-card" id="stat-movies">
+          <div class="stat-icon" style="background: linear-gradient(135deg,#f5a623,#f76b1c)">🎬</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-movies-val">—</span>
+            <span class="stat-label">Movies</span>
+          </div>
+          <div class="stat-trend up">↑ Growing</div>
+        </div>
+        <div class="stat-card glass-card" id="stat-ratings">
+          <div class="stat-icon" style="background: linear-gradient(135deg,#56c596,#1aab8a)">⭐</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-ratings-val">—</span>
+            <span class="stat-label">Ratings</span>
+          </div>
+          <div class="stat-trend up">↑ Engaged</div>
+        </div>
+        <div class="stat-card glass-card" id="stat-reviews">
+          <div class="stat-icon" style="background: linear-gradient(135deg,#ff6b9d,#c44cce)">💬</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-reviews-val">—</span>
+            <span class="stat-label">Reviews</span>
+          </div>
+          <div class="stat-trend up">↑ Vocal</div>
+        </div>
+        <div class="stat-card glass-card" id="stat-genres">
+          <div class="stat-icon" style="background: linear-gradient(135deg,#43e5f7,#2979ff)">🎭</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-genres-val">—</span>
+            <span class="stat-label">Genres</span>
+          </div>
+          <div class="stat-trend neutral">Stable</div>
+        </div>
+        <div class="stat-card glass-card" id="stat-directors">
+          <div class="stat-icon" style="background: linear-gradient(135deg,#ff9671,#ff6e40)">🎥</div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-directors-val">—</span>
+            <span class="stat-label">Directors</span>
+          </div>
+          <div class="stat-trend neutral">Diverse</div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="chart-card glass-card">
+          <h3 class="chart-title">Genre Popularity</h3>
+          <div class="chart-container">
+            <canvas id="genre-chart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card glass-card">
+          <h3 class="chart-title">Monthly Activity (Last 12 Months)</h3>
+          <div class="chart-container">
+            <canvas id="activity-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two Column -->
+      <div class="two-col-grid">
+        <!-- Top Rated Movies -->
+        <div class="glass-card panel">
+          <h3 class="panel-title">🏆 Top Rated Movies</h3>
+          <div id="top-rated-list" class="ranked-list">
+            <div class="loading-placeholder">Loading…</div>
+          </div>
+        </div>
+        <!-- Most Active Users -->
+        <div class="glass-card panel">
+          <h3 class="panel-title">🔥 Most Active Users</h3>
+          <div id="active-users-list" class="ranked-list">
+            <div class="loading-placeholder">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trending & Language -->
+      <div class="two-col-grid">
+        <div class="glass-card panel">
+          <h3 class="panel-title">📈 Trending Movies (Last 30 Days)</h3>
+          <div id="trending-list" class="ranked-list">
+            <div class="loading-placeholder">Loading…</div>
+          </div>
+        </div>
+        <div class="chart-card glass-card">
+          <h3 class="chart-title">Language Distribution</h3>
+          <div class="chart-container chart-sm">
+            <canvas id="language-chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== DISCOVER SECTION =================== -->
+    <section id="section-discover" class="content-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Discover Movies</h1>
+          <p class="section-subtitle">Explore our curated collection of films</p>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar glass-card">
+        <div class="filter-group">
+          <label for="filter-genre">Genre</label>
+          <select id="filter-genre">
+            <option value="">All Genres</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-language">Language</label>
+          <select id="filter-language">
+            <option value="">All Languages</option>
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Korean">Korean</option>
+            <option value="French">French</option>
+            <option value="Spanish">Spanish</option>
+            <option value="Japanese">Japanese</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-year">Min Year</label>
+          <input type="number" id="filter-year" placeholder="e.g. 2000" min="1900" max="2024" />
+        </div>
+        <div class="filter-group">
+          <label for="filter-rating">Min IMDb Rating</label>
+          <input type="number" id="filter-rating" placeholder="e.g. 7.0" min="0" max="10" step="0.1" />
+        </div>
+        <div class="filter-group">
+          <label for="filter-sort">Sort By</label>
+          <select id="filter-sort">
+            <option value="rating">Rating</option>
+            <option value="year">Year</option>
+            <option value="title">Title A-Z</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" id="apply-filters-btn" onclick="applyFilters()">Apply Filters</button>
+        <button class="btn btn-outline btn-sm" id="reset-filters-btn" onclick="resetFilters()">Reset</button>
+      </div>
+
+      <!-- Movies Grid -->
+      <div class="movies-grid" id="movies-grid">
+        <div class="loading-placeholder large">Loading movies…</div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination">
+        <button class="btn btn-outline btn-sm" id="prev-page-btn" onclick="changePage(-1)">← Previous</button>
+        <span class="page-info" id="page-info">Page 1</span>
+        <button class="btn btn-outline btn-sm" id="next-page-btn" onclick="changePage(1)">Next →</button>
+      </div>
+    </section>
+
+    <!-- =================== RECOMMENDATIONS SECTION =================== -->
+    <section id="section-recommendations" class="content-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">For You</h1>
+          <p class="section-subtitle">Personalized recommendations based on your taste</p>
+        </div>
+        <button class="btn btn-primary" id="refresh-recs-btn" onclick="loadRecommendations()">Refresh</button>
+      </div>
+      <div id="recommendations-content">
+        <div class="auth-required-box glass-card" id="recs-auth-box">
+          <span class="big-icon">🎯</span>
+          <h3>Sign in to get recommendations</h3>
+          <p>Create an account, rate some movies, and we'll recommend films tailored to your taste.</p>
+          <button class="btn btn-primary" onclick="openAuthModal()">Sign In / Register</button>
+        </div>
+        <div id="recs-grid" class="movies-grid hidden"></div>
+      </div>
+    </section>
+
+    <!-- =================== WATCHLIST SECTION =================== -->
+    <section id="section-watchlist" class="content-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">My Watchlist</h1>
+          <p class="section-subtitle">Track what you want to watch</p>
+        </div>
+      </div>
+      <div id="watchlist-content">
+        <div class="auth-required-box glass-card" id="watchlist-auth-box">
+          <span class="big-icon">📋</span>
+          <h3>Sign in to manage your watchlist</h3>
+          <p>Keep track of movies you want to watch, are watching, or have completed.</p>
+          <button class="btn btn-primary" onclick="openAuthModal()">Sign In / Register</button>
+        </div>
+        <div id="watchlist-tabs" class="hidden">
+          <div class="status-tabs">
+            <button class="status-tab active" onclick="filterWatchlist('all')" id="wl-tab-all">All</button>
+            <button class="status-tab" onclick="filterWatchlist('Plan to Watch')" id="wl-tab-plan">Plan to Watch</button>
+            <button class="status-tab" onclick="filterWatchlist('Watching')" id="wl-tab-watching">Watching</button>
+            <button class="status-tab" onclick="filterWatchlist('Completed')" id="wl-tab-completed">Completed</button>
+          </div>
+          <div id="watchlist-grid" class="movies-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== ANALYTICS SECTION =================== -->
+    <section id="section-analytics" class="content-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Analytics & Reports</h1>
+          <p class="section-subtitle">Deep insights into movie trends and user behavior</p>
+        </div>
+      </div>
+
+      <!-- Analytics Tabs -->
+      <div class="analytics-tabs">
+        <button class="analytics-tab active" onclick="switchAnalyticsTab('overview')" id="atab-overview">Overview</button>
+        <button class="analytics-tab" onclick="switchAnalyticsTab('movies')" id="atab-movies">Movies</button>
+        <button class="analytics-tab" onclick="switchAnalyticsTab('users')" id="atab-users">Users</button>
+        <button class="analytics-tab" onclick="switchAnalyticsTab('genres')" id="atab-genres">Genres</button>
+        <button class="analytics-tab" onclick="switchAnalyticsTab('directors')" id="atab-directors">Directors</button>
+        <button class="analytics-tab" onclick="switchAnalyticsTab('watchlist')" id="atab-watchlist">Watchlist</button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div id="analytics-overview" class="analytics-tab-content active">
+        <div class="two-col-grid">
+          <div class="chart-card glass-card">
+            <h3 class="chart-title">Country Distribution</h3>
+            <div class="chart-container"><canvas id="country-chart"></canvas></div>
+          </div>
+          <div class="chart-card glass-card">
+            <h3 class="chart-title">Ratings Histogram</h3>
+            <div class="chart-container"><canvas id="ratings-dist-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Movies Tab -->
+      <div id="analytics-movies" class="analytics-tab-content">
+        <div class="glass-card panel">
+          <h3 class="panel-title">Top 20 Movies by User Rating</h3>
+          <div class="table-wrapper">
+            <table class="data-table" id="movies-table">
+              <thead><tr><th>#</th><th>Title</th><th>Genre</th><th>Director</th><th>Avg Rating</th><th>Total Ratings</th><th>IMDb</th></tr></thead>
+              <tbody id="movies-table-body"><tr><td colspan="7" class="loading-placeholder">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Tab -->
+      <div id="analytics-users" class="analytics-tab-content">
+        <div class="glass-card panel">
+          <h3 class="panel-title">Most Active Users</h3>
+          <div class="table-wrapper">
+            <table class="data-table" id="users-table">
+              <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Country</th><th>Ratings</th><th>Reviews</th><th>Watchlist</th><th>Total Activity</th></tr></thead>
+              <tbody id="users-table-body"><tr><td colspan="8" class="loading-placeholder">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Genres Tab -->
+      <div id="analytics-genres" class="analytics-tab-content">
+        <div class="two-col-grid">
+          <div class="glass-card panel">
+            <h3 class="panel-title">Genre Statistics</h3>
+            <div class="table-wrapper">
+              <table class="data-table" id="genres-table">
+                <thead><tr><th>Genre</th><th>Movies</th><th>Avg Rating</th><th>Reviews</th></tr></thead>
+                <tbody id="genres-table-body"><tr><td colspan="4" class="loading-placeholder">Loading…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="chart-card glass-card">
+            <h3 class="chart-title">Movie Count by Genre</h3>
+            <div class="chart-container"><canvas id="genre-donut-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Directors Tab -->
+      <div id="analytics-directors" class="analytics-tab-content">
+        <div class="glass-card panel">
+          <h3 class="panel-title">Director Statistics</h3>
+          <div class="table-wrapper">
+            <table class="data-table" id="directors-table">
+              <thead><tr><th>#</th><th>Director</th><th>Country</th><th>Movies</th><th>Avg IMDb</th><th>Avg User Rating</th></tr></thead>
+              <tbody id="directors-table-body"><tr><td colspan="6" class="loading-placeholder">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchlist Tab -->
+      <div id="analytics-watchlist" class="analytics-tab-content">
+        <div class="two-col-grid">
+          <div class="chart-card glass-card">
+            <h3 class="chart-title">Watchlist Status Distribution</h3>
+            <div class="chart-container chart-sm"><canvas id="watchlist-status-chart"></canvas></div>
+          </div>
+          <div class="glass-card panel">
+            <h3 class="panel-title">Most Watchlisted Movies</h3>
+            <div id="most-watchlisted" class="ranked-list"><div class="loading-placeholder">Loading…</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== DATABASE SECTION =================== -->
+    <section id="section-database" class="content-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Database Explorer</h1>
+          <p class="section-subtitle">Explore CineMatch database schema and run queries</p>
+        </div>
+      </div>
+
+      <div class="db-grid">
+        <!-- Schema Cards -->
+        <div class="db-schema-panel glass-card">
+          <h3 class="panel-title">📊 Schema Overview</h3>
+          <div class="schema-tables" id="schema-tables">
+            <div class="schema-table-item" onclick="showTableInfo('users')">
+              <span class="table-icon">👤</span><span>users</span><span class="table-badge">10 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('movies')">
+              <span class="table-icon">🎬</span><span>movies</span><span class="table-badge">14 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('genres')">
+              <span class="table-icon">🎭</span><span>genres</span><span class="table-badge">2 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('directors')">
+              <span class="table-icon">🎥</span><span>directors</span><span class="table-badge">4 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('actors')">
+              <span class="table-icon">🎭</span><span>actors</span><span class="table-badge">4 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('movie_actors')">
+              <span class="table-icon">🔗</span><span>movie_actors</span><span class="table-badge">Junction</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('ratings')">
+              <span class="table-icon">⭐</span><span>ratings</span><span class="table-badge">5 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('reviews')">
+              <span class="table-icon">💬</span><span>reviews</span><span class="table-badge">5 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('watchlist')">
+              <span class="table-icon">📋</span><span>watchlist</span><span class="table-badge">5 cols</span>
+            </div>
+            <div class="schema-table-item" onclick="showTableInfo('recommendations')">
+              <span class="table-icon">🎯</span><span>recommendations</span><span class="table-badge">5 cols</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Info -->
+        <div class="db-info-panel glass-card" id="db-info-panel">
+          <h3 class="panel-title" id="db-table-title">Select a table</h3>
+          <div id="db-table-info">
+            <p class="db-hint">Click on a table in the schema panel to see its details.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ERD Visualization -->
+      <div class="glass-card panel erd-panel">
+        <h3 class="panel-title">🔗 Entity Relationship Overview</h3>
+        <div class="erd-diagram" id="erd-diagram">
+          <div class="erd-entity" style="grid-column:1;grid-row:2">
+            <div class="erd-name">👤 users</div>
+            <div class="erd-attr">PK: user_id</div>
+            <div class="erd-attr">email, name</div>
+            <div class="erd-attr">country, gender</div>
+          </div>
+          <div class="erd-entity" style="grid-column:3;grid-row:1">
+            <div class="erd-name">⭐ ratings</div>
+            <div class="erd-attr">PK: rating_id</div>
+            <div class="erd-attr">FK: user_id</div>
+            <div class="erd-attr">FK: movie_id, 1-5</div>
+          </div>
+          <div class="erd-entity" style="grid-column:3;grid-row:2">
+            <div class="erd-name">💬 reviews</div>
+            <div class="erd-attr">PK: review_id</div>
+            <div class="erd-attr">FK: user_id</div>
+            <div class="erd-attr">FK: movie_id</div>
+          </div>
+          <div class="erd-entity" style="grid-column:3;grid-row:3">
+            <div class="erd-name">📋 watchlist</div>
+            <div class="erd-attr">PK: watchlist_id</div>
+            <div class="erd-attr">FK: user_id</div>
+            <div class="erd-attr">FK: movie_id</div>
+          </div>
+          <div class="erd-entity" style="grid-column:5;grid-row:2">
+            <div class="erd-name">🎬 movies</div>
+            <div class="erd-attr">PK: movie_id</div>
+            <div class="erd-attr">FK: genre_id</div>
+            <div class="erd-attr">FK: director_id</div>
+          </div>
+          <div class="erd-entity" style="grid-column:7;grid-row:1">
+            <div class="erd-name">🎭 genres</div>
+            <div class="erd-attr">PK: genre_id</div>
+            <div class="erd-attr">genre_name</div>
+          </div>
+          <div class="erd-entity" style="grid-column:7;grid-row:2">
+            <div class="erd-name">🎥 directors</div>
+            <div class="erd-attr">PK: director_id</div>
+            <div class="erd-attr">name, country</div>
+          </div>
+          <div class="erd-entity" style="grid-column:7;grid-row:3">
+            <div class="erd-name">🎭 actors</div>
+            <div class="erd-attr">PK: actor_id</div>
+            <div class="erd-attr">name, country</div>
+          </div>
+          <div class="erd-entity" style="grid-column:5;grid-row:3">
+            <div class="erd-name">🔗 movie_actors</div>
+            <div class="erd-attr">FK: movie_id</div>
+            <div class="erd-attr">FK: actor_id</div>
+            <div class="erd-attr">M:N Junction</div>
+          </div>
+          <div class="erd-entity" style="grid-column:3;grid-row:4">
+            <div class="erd-name">🎯 recommendations</div>
+            <div class="erd-attr">PK: rec_id</div>
+            <div class="erd-attr">FK: user_id</div>
+            <div class="erd-attr">FK: movie_id, score</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- end .main-content -->
+
+  <script src="app.js"></script>
+</body>
+</html>

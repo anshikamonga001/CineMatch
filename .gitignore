@@ -1,0 +1,70 @@
+# CineMatch – .gitignore
+
+# ============================================
+# Node.js / Backend
+# ============================================
+backend/node_modules/
+backend/.env
+backend/.env.local
+backend/.env.production
+backend/logs/
+backend/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================
+# Database Sensitive Files
+# ============================================
+# Never commit database dumps with real user data
+database/prod_dump.sql
+database/*.dump
+
+# ============================================
+# OS / IDE Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IntelliJ / WebStorm / IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VSCode
+.vscode/settings.json
+.vscode/launch.json
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# ============================================
+# Build Artifacts
+# ============================================
+dist/
+build/
+*.min.js
+*.min.css
+
+# ============================================
+# Temporary / Cache Files
+# ============================================
+.cache/
+.parcel-cache/
+tmp/
+temp/
+
+# ============================================
+# Package Lock Files (optional, keep one)
+# ============================================
+# Uncomment if you want to ignore package-lock
+# backend/package-lock.json
