@@ -47,7 +47,7 @@ async function testConnection() {
  * @returns {Promise<Array>}
  */
 async function query(sql, params = []) {
-  const [rows] = await promisePool.execute(sql, params);
+  const [rows] = await promisePool.query(sql, params);
   return rows;
 }
 
